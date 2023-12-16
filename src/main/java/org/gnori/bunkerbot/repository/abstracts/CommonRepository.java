@@ -1,4 +1,4 @@
-package org.gnori.bunkerbot.domain.repository.abstracts;
+package org.gnori.bunkerbot.repository.abstracts;
 
 import org.gnori.bunkerbot.domain.abstracts.AbstractEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
