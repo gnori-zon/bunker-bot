@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.gnori.bunkerbot.controller.MessageTypeDistributor;
+import org.gnori.bunkerbot.service.PermissionChecker;
 import org.gnori.bunkerbot.service.command.Command;
 import org.gnori.bunkerbot.service.command.CommandContainer;
 import org.gnori.bunkerbot.service.command.impl.MessageType;
@@ -15,13 +16,17 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageTypeDistributorImpl implements MessageTypeDistributor {
 
+    PermissionChecker permissionChecker;
     CommandContainer<MessageType, Command<MessageType>> commandContainer;
 
     @Override
     public void distribute(Update update) {
 
-        final MessageType messageType = detectType(update);
-        commandContainer.retrieveCommand(messageType).execute(update);
+        if (permissionChecker.hasPermission(update)) {
+
+            final MessageType messageType = detectType(update);
+            commandContainer.retrieveCommand(messageType).execute(update);
+        }
     }
 
     private MessageType detectType(Update update) {
