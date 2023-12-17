@@ -4,22 +4,29 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.gnori.bunkerbot.domain.BotUserState;
+import org.gnori.bunkerbot.service.BunkerGame;
+import org.gnori.bunkerbot.service.MessageEditor;
 import org.gnori.bunkerbot.service.MessageSender;
 import org.gnori.bunkerbot.service.command.constants.ResponseConst;
 import org.gnori.bunkerbot.service.command.impl.text.commands.state.StateCommand;
 import org.gnori.bunkerbot.service.command.impl.text.commands.state.StateCommandUtils;
 import org.gnori.bunkerbot.service.impl.domain.BotUserActiveChanger;
 import org.gnori.bunkerbot.service.impl.domain.BotUserStateChanger;
+import org.gnori.bunkerbot.service.impl.editor.EditKeyboardMarkupParams;
 import org.gnori.bunkerbot.service.impl.sender.SendTextParams;
 import org.gnori.bunkerbot.service.keyboard.generator.KeyboardGeneratorContainer;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NextStepGameStateCommand implements StateCommand {
 
+    BunkerGame bunkerGame;
     MessageSender messageSender;
     BotUserStateChanger botUserStateChanger;
     BotUserActiveChanger botUserActiveChanger;
@@ -34,7 +41,8 @@ public class NextStepGameStateCommand implements StateCommand {
         StateCommandUtils.extractId(userIdRaw).ifPresentOrElse(
                 userId -> {
                     deactivateUserAndChangeState(userId, chatId);
-                    // todo: display next Step
+                    bunkerGame.deleteUser(userId);
+                    bunkerGame.nextStep();
                 },
                 () -> sendInvalidId(chatId)
         );

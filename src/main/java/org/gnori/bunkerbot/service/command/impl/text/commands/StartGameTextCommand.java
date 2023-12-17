@@ -3,6 +3,7 @@ package org.gnori.bunkerbot.service.command.impl.text.commands;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.gnori.bunkerbot.service.BunkerGame;
 import org.gnori.bunkerbot.service.MessageSender;
 import org.gnori.bunkerbot.service.command.impl.callback.CallbackCommandKey;
 import org.gnori.bunkerbot.service.command.impl.text.TextCommand;
@@ -22,6 +23,7 @@ import java.util.List;
 public class StartGameTextCommand implements TextCommand {
 
     MessageSender messageSender;
+    BunkerGame bunkerGame;
 
     @Override
     public void execute(Update update) {
@@ -36,6 +38,7 @@ public class StartGameTextCommand implements TextCommand {
                 .build();
 
         messageSender.sendMessage(sendTextParams);
+        bunkerGame.startGame();
     }
 
     @Override

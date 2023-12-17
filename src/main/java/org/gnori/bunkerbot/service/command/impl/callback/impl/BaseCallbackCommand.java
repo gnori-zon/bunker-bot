@@ -21,8 +21,6 @@ public abstract class BaseCallbackCommand implements CallbackCommand {
 
         final Long chatId = update.getCallbackQuery().getMessage().getChatId();
         final Integer messageId = update.getCallbackQuery().getMessage().getMessageId();
-        final String text = update.getCallbackQuery().getMessage().getText();
-
 
         final EditKeyboardMarkupParams editParams = EditKeyboardMarkupParams.builder()
                 .chatId(chatId)
@@ -31,41 +29,5 @@ public abstract class BaseCallbackCommand implements CallbackCommand {
                 .build();
 
         messageEditor.editReplyMarkup(editParams);
-
-//        if (text != null && !text.isEmpty()) {
-//            final EditTextParams editTextParams = prepareEditTextWithoutKeyboardMarkup(update);
-//            editMessageService.editMessage(editTextParams);
-//        } else {
-//            final EditKeyboardMarkupParams editKeyboardMarkupParams = prepareEditKeyboardWithoutKeyboardMarkup(update);
-//
-//            editMessageService.editReplyMarkup(editKeyboardMarkupParams);
-//        }
     }
-//
-//    private EditTextParams prepareEditTextWithoutKeyboardMarkup(Update update) {
-//        final Message messageFromCallback = update.getCallbackQuery().getMessage();
-//        final Long chatId = messageFromCallback.getChatId();
-//        final Integer oldMessageId = messageFromCallback.getMessageId();
-//        final String text = messageFromCallback.getText();
-//
-//        return EditTextParams.builder()
-//                .chatId(chatId)
-//                .logActivityData(new LogActivityData(update))
-//                .messageId(oldMessageId)
-//                .text(text)
-//                .inlineKeyboardMarkup(new InlineKeyboardMarkup(Collections.emptyList()))
-//                .build();
-//    }
-//
-//    private EditKeyboardMarkupParams prepareEditKeyboardWithoutKeyboardMarkup(Update update) {
-//        final Message messageFromCallback = update.getCallbackQuery().getMessage();
-//        final Long chatId = messageFromCallback.getChatId();
-//        final Integer oldMessageId = messageFromCallback.getMessageId();
-//
-//        return EditKeyboardMarkupParams.builder()
-//                .chatId(chatId)
-//                .messageId(oldMessageId)
-//                .inlineKeyboardMarkup(new InlineKeyboardMarkup(Collections.emptyList()))
-//                .build();
-//    }
 }
