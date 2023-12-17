@@ -74,8 +74,8 @@ public class BunkerGameImpl implements BunkerGame {
                 sendInfoPerBotUser();
             }
             default -> {
-                oppositeAppendRandomCharacteristicByName("Особенность");
-                oppositeAppendRandomCharacteristicByName("Особенность");
+                oppositeAppendRandomCharacteristicByName("Особенность", true);
+                oppositeAppendRandomCharacteristicByName("Особенность", false);
                 sendInfoPerBotUser();
             }
         }
@@ -190,34 +190,15 @@ public class BunkerGameImpl implements BunkerGame {
         });
     }
 
-    private void oppositeAppendRandomCharacteristicByName(String name) {
+    private void oppositeAppendRandomCharacteristicByName(String name, boolean firstMustOpposite) {
 
         characteristicTypeRepository.findByNameEqualsIgnoreCase(name).ifPresent(characteristicType -> {
 
-            List<Characteristic> oppositeCharacteristics = findAllOppositeCharacteristics(characteristicType);
             LinkedList<BotUser> botUsersForAddSimpleRandomize = new LinkedList<>(characteristicsPerUsers.keySet().stream().toList());
 
-            int countChecks = 0;
-            while (!oppositeCharacteristics.isEmpty() && countChecks < characteristicsPerUsers.keySet().size()) {
-
-                countChecks++;
-                final BotUser botUser = botUsersForAddSimpleRandomize.removeFirst();
-                final Set<Characteristic> bouUserCharacteristics = characteristicsPerUsers.get(botUser).stream()
-                        .collect(Collectors.toUnmodifiableSet());
-
-                boolean isFound = false;
-                for (int i = 0; i < oppositeCharacteristics.size(); i++) {
-
-                    if (!bouUserCharacteristics.contains(oppositeCharacteristics.get(i))) {
-                        characteristicsPerUsers.get(botUser).add(oppositeCharacteristics.remove(i));
-                        isFound = true;
-                        break;
-                    }
-                }
-
-                if (!isFound) {
-                    botUsersForAddSimpleRandomize.addLast(botUser);
-                }
+            if (firstMustOpposite) {
+                List<Characteristic> oppositeCharacteristics = findAllOppositeCharacteristics(characteristicType);
+                fillOpposites(oppositeCharacteristics, botUsersForAddSimpleRandomize);
             }
 
             botUsersForAddSimpleRandomize.forEach(botUser -> {
@@ -231,9 +212,36 @@ public class BunkerGameImpl implements BunkerGame {
 
                 excludeBotUserCharacteristics.stream().findFirst()
                         .ifPresent(characteristic -> characteristicsPerUsers.get(botUser).add(characteristic));
-
             });
         });
+    }
+
+    private void fillOpposites(List<Characteristic> oppositeCharacteristics,LinkedList<BotUser> botUsersForAddSimpleRandomize) {
+
+        int countChecks = 0;
+
+        while (!oppositeCharacteristics.isEmpty() && countChecks < characteristicsPerUsers.keySet().size()) {
+
+            countChecks++;
+            final BotUser botUser = botUsersForAddSimpleRandomize.removeFirst();
+            final Set<Characteristic> bouUserCharacteristics = characteristicsPerUsers.get(botUser).stream()
+                    .collect(Collectors.toUnmodifiableSet());
+
+            boolean isFound = false;
+            for (int i = 0; i < oppositeCharacteristics.size(); i++) {
+
+                if (!bouUserCharacteristics.contains(oppositeCharacteristics.get(i))) {
+                    characteristicsPerUsers.get(botUser).add(oppositeCharacteristics.remove(i));
+                    isFound = true;
+                    break;
+                }
+            }
+
+            if (!isFound) {
+                botUsersForAddSimpleRandomize.addLast(botUser);
+            }
+            log.info("found opposite characteristic: {}", isFound);
+        }
     }
 
     private List<Characteristic> findAllOppositeCharacteristics(CharacteristicType characteristicType) {
