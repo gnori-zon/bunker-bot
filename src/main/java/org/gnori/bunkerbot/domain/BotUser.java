@@ -27,6 +27,7 @@ import static org.gnori.bunkerbot.domain.constants.DefaultGenericGenerator.*;
 @Table(name = BOT_USER_TABLE)
 @AllArgsConstructor
 @RequiredArgsConstructor
+@EqualsAndHashCode(callSuper = true, of = {})
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public class BotUser extends AuditableEntity {
 
