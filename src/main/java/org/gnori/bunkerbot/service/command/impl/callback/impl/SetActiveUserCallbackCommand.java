@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.gnori.bunkerbot.domain.BotUserState;
+import org.gnori.bunkerbot.service.MessageEditor;
 import org.gnori.bunkerbot.service.MessageSender;
 import org.gnori.bunkerbot.service.command.impl.callback.CallbackCommand;
 import org.gnori.bunkerbot.service.command.impl.callback.CallbackCommandKey;
@@ -20,18 +21,30 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class SetActiveUserCallbackCommand implements CallbackCommand {
+public class SetActiveUserCallbackCommand extends BaseCallbackCommand {
 
     MessageSender messageSender;
     BotUserActiveChanger botUserActiveChanger;
     KeyboardGeneratorContainer keyboardGeneratorContainer;
 
+    public SetActiveUserCallbackCommand(
+            MessageEditor messageEditor,
+            MessageSender messageSender,
+            BotUserActiveChanger botUserActiveChanger,
+            KeyboardGeneratorContainer keyboardGeneratorContainer
+    ) {
+        super(messageEditor);
+        this.messageSender = messageSender;
+        this.botUserActiveChanger = botUserActiveChanger;
+        this.keyboardGeneratorContainer = keyboardGeneratorContainer;
+    }
+
     @Override
     public void execute(Update update) {
 
         final long chatId = update.getCallbackQuery().getMessage().getChatId();
+        clearInlineKeyboard(update);
         extractCallbackData(update).ifPresent(userIdAndActive -> {
 
             boolean isChanged = botUserActiveChanger.changeActive(userIdAndActive.getFirst(), userIdAndActive.getSecond());

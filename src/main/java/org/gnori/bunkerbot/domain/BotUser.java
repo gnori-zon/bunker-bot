@@ -46,7 +46,8 @@ public class BotUser extends AuditableEntity {
     @Column(name = "is_active", nullable = false)
     boolean isActive = false;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
-    BotUserState state;
+    BotUserState state = BotUserState.DEFAULT;
 }
