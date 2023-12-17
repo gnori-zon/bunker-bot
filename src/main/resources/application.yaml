@@ -1,0 +1,12 @@
+server:
+  port: 8888
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bunker_bot
+    username: <username>
+    password: <password>
+
+tg:
+  token: <token>
+  name: <name>
